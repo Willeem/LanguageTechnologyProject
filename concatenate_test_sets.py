@@ -4,15 +4,16 @@ from os.path import isfile, join
 import re
 
 
-def write_german_files(files):
+def write_german_files(files, test=False):
+    outfile_name = 'test_de' if test else 'train_src_de'
     de_count = 0
     for file_name in files:
         file_ = open(file_name)
-        with open('combined_de.txt', 'a') as outfile:
+        with open(f'{outfile_name}.txt', 'a') as outfile:
             if 'de_' in file_name or 'de.lc' in file_name:
                 de_count += 1
                 outfile.write(file_.read())
-            elif 'ref.de' in file_name:
+            elif 'src.de' in file_name:
                 de_count += 1
                 lines = file_.readlines()
                 stripped_lines = []
@@ -23,15 +24,18 @@ def write_german_files(files):
                 outfile.write(''.join(stripped_lines))
         file_.close()
     return de_count
-def write_english_files(files):
+
+
+def write_english_files(files, test=False):
+    outfile_name = 'test_en' if test else 'train_src_en'
     en_count = 0
     for file_name in files:
         file_ = open(file_name)
-        with open('combined_en.txt', 'a') as outfile_en:
+        with open(f'{outfile_name}.txt', 'a') as outfile_en:
             if file_name[4:9] == 'test.' or 'en.lc' in file_name:
                 en_count += 1
                 outfile_en.write(file_.read())
-            elif 'src.en' in file_name:        
+            elif 'ref.en' in file_name:        
                 en_count += 1
                 lines = file_.readlines()
                 stripped_lines = []
@@ -42,16 +46,19 @@ def write_english_files(files):
                 outfile_en.write(''.join(stripped_lines))
         file_.close()
     return en_count
-if __name__ == "__main__":
-    de_files = ['raw/newstest2015-ende-ref.de.sgm', 'raw/newstest2016-ende-ref.de.sgm', 
-    'raw/newstest2017-ende-ref.de.sgm',  'raw/newstest2018-ende-ref.de.sgm', 'raw/test_2017_flickr.de.lc.norm.tok', 
-    'raw/test_2017_mscoco.de.lc.norm.tok']
 
-    en_files = ['raw/newstest2015-ende-src.en.sgm', 'raw/newstest2016-ende-src.en.sgm', 
-    'raw/newstest2017-ende-src.en.sgm',  'raw/newstest2018-ende-src.en.sgm', 'raw/test_2017_flickr.en.lc.norm.tok', 
-    'raw/test_2017_mscoco.en.lc.norm.tok']
-    
-    de_count = write_german_files(de_files)
-    en_count = write_english_files(en_files)
-    
+if __name__ == "__main__":
+    train_de_files = ['raw/newstest2014-deen-src.de.sgm', 'raw/newstest2015-deen-src.de.sgm', 
+    'raw/newstest2016-deen-src.de.sgm', 
+    'raw/newstest2017-deen-src.de.sgm',  'raw/newstest2018-deen-src.de.sgm']
+
+    train_en_files = ['raw/newstest2014-deen-ref.en.sgm', 'raw/newstest2015-deen-ref.en.sgm', 
+    'raw/newstest2016-deen-ref.en.sgm', 'raw/newstest2017-deen-ref.en.sgm', 
+    'raw/newstest2018-deen-ref.en.sgm']
+    de_count = write_german_files(train_de_files)
+    en_count = write_english_files(train_en_files)
     assert de_count == en_count
+    test_de_file = ['raw/newstest2019-deen-src.de.sgm']
+    test_en_file = ['raw/newstest2019-deen-ref.en.sgm']
+    write_german_files(test_de_file, test=True)
+    write_english_files(test_en_file, test=True)

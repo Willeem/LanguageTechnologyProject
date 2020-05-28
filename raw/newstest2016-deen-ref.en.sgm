@@ -1,4 +1,4 @@
-<srcset setid="newstest2016" srclang="any">
+<refset setid="newstest2016" srclang="any" trglang="en">
 <doc sysid="ref" docid="Wirtschaftsblatt.at.22162" genre="news" origlang="de">
 <p>
 <seg id="1">Obama receives Netanyahu</seg>
@@ -3618,4 +3618,4 @@
 <seg id="17">Foodwatch is calling for consumers to protest against the EU plans under: www.quecksilber-aktion.foodwatch.de</seg>
 </p>
 </doc>
-</srcset>
+</refset>

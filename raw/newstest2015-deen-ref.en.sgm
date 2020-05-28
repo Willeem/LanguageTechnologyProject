@@ -1,4 +1,4 @@
-<srcset setid="newstest2015" srclang="any">
+<refset setid="newstest2015" srclang="any" trglang="en">
 <doc sysid="ref" docid="1012-bbc" genre="news" origlang="en">
 <p>
 <seg id="1">India and Japan prime ministers meet in Tokyo</seg>
@@ -2492,4 +2492,4 @@
 <seg id="35">Next year, he hopes to have safety barriers on the course for the benefit of those taking part on the Feldberg.</seg>
 </p>
 </doc>
-</srcset>
+</refset>

@@ -1,4 +1,4 @@
-<srcset setid="newstest2018" srclang="any">
+<refset setid="newstest2018" srclang="any" trglang="en">
 <doc sysid="ref" docid="merkur-online.de.241396" genre="news" origlang="de">
 <p>
 <seg id="1">Munich 1856: Four maps that will change your view of the city</seg>
@@ -3485,4 +3485,4 @@
 <seg id="111">Now one would ask for the decency to finally leave in peace a 93-year-old man who has rendered great service and without whom probably no-one outside Bavaria and perhaps even Germany would know of the Regensburger Domspatzen</seg>
 </p>
 </doc>
-</srcset>
+</refset>

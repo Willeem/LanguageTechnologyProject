@@ -1,4 +1,4 @@
-<refset setid="newstest2018" srclang="any" trglang="de">
+<srcset setid="newstest2018" srclang="any">
 <doc sysid="ref" docid="merkur-online.de.241396" genre="news" origlang="de">
 <p>
 <seg id="1">München 1856: Vier Karten, die Ihren Blick auf die Stadt verändern</seg>
@@ -3485,4 +3485,4 @@
 <seg id="111">Jetzt würde der Anstand gebieten, einen 93-jährigen Mann, der sich große Verdienste erworben hat und ohne den außerhalb Bayerns und vielleicht noch Deutschlands wohl niemand die Regensburger Domspatzen kennen würde, endlich in Frieden zu lassen.</seg>
 </p>
 </doc>
-</refset>
+</srcset>

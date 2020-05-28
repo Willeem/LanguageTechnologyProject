@@ -1,4 +1,4 @@
-<srcset setid="newstest2017" srclang="any">
+<refset setid="newstest2017" srclang="any" trglang="en">
 <doc sysid="ref" docid="abcnews.199762" genre="news" origlang="en">
 <p>
 <seg id="1">28-Year-Old Chef Found Dead at San Francisco Mall</seg>
@@ -3523,4 +3523,4 @@
 <seg id="8">The company is owned by the Carl Zeiss optics and electronics firm (Oberkochen), and employs just under 3000 people.</seg>
 </p>
 </doc>
-</srcset>
+</refset>
