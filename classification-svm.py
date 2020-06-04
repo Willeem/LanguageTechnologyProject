@@ -329,18 +329,19 @@ def most_informative_features(vec, clf, labels, n=10):
             print("\t%.4f\t%-25s\t\t%.4f\t%-25s" % (coef_1, fn_1, coef_2, fn_2))
 
 
-def classify(p_settings, c_settings, v_settings, m_settings):
+def classify(c_settings, v_settings, m_settings):
     """
     Perform all required steps for classification of sentiment labels in code-mixed text.
-    :param p_settings: Dictionary of parameters for the preprocessing function.
     :param c_settings: Dictionary of parameters to tweak classification steps to execute.
     :param v_settings: Dictionary of parameters for the vectorizer.
     :param m_settings: Dictionary of parameters for the classifier.
     """
     # Print out settings
     print('== Settings ==')
-    print('-- Feature Generation --')
-    for setting, value in p_settings.items():
+    print('-- Vectorization --')
+    if not v_settings:
+        print('Default settings')
+    for setting, value in v_settings.items():
         print('{:30} {}'.format(setting, value))
 
     print('\n-- Classifier ({}) --'.format(c_settings['classifier']))
@@ -356,10 +357,6 @@ def classify(p_settings, c_settings, v_settings, m_settings):
     # Get dev corpus
     Xdev, Ydev = load_corpus('dev')
     data_description(Xdev, Ydev, 'dev')
-
-    # Perform preprocessing
-    Xtrain = preprocess(Xtrain, 'train', **p_settings)
-    Xdev = preprocess(Xdev, 'dev', **p_settings)
 
     # Merge train and dev data
     Xtrain_dev = Xtrain + Xdev
@@ -401,12 +398,6 @@ def classify(p_settings, c_settings, v_settings, m_settings):
 
 def main():
     # Settings
-    p_settings = {
-        'lowercase': False,
-        'stopwords': False,
-        'rm_punctuation': False
-    }
-
     c_settings = {
         'classifier': 'LinearSVC',
         'ml_regular': True,
@@ -416,13 +407,15 @@ def main():
     }
 
     v_settings = {
-        'ngram_range': (1, 3)
+        'ngram_range': (1, 3),
+        'lowercase': False,
+        'stop_words': None
     }
 
     m_settings = {}
 
     # Perform classification
-    classify(p_settings, c_settings, v_settings, m_settings)
+    classify(c_settings, v_settings, m_settings)
 
 
 if __name__ == "__main__":
