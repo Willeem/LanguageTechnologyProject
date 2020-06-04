@@ -23,24 +23,28 @@ import os
 def load_corpus(phase, cache=True):
     """
     Loads the given corpus file to a document and label list.
-    :param path: Path to the corpus file to load.
+    :param phase: String representing the current phase name.
     :param cache: Boolean expressing whether data should be loaded from and saved to cache.
     :return: Two lists, one of documents and one of their labels.
     """
+    if phase not in ('train', 'dev', 'test'):
+        raise ValueError("Phase should be one of 'train', 'dev', 'test'")
+
     print('\n=> Loading {} corpus...'.format(phase))
 
     cache_patt = 'cache/{}.corpus'
     cache_name = cache_patt.format(phase)
 
     if os.path.isfile(cache_name) and cache:
-        print('Using cache...'.format(phase))
+        print('Using cache...')
         X, Y = pickle.load(open(cache_name, "rb"))
 
     else:
-        paths = {'deepL': 'data/{}_deepL_en.txt',
-                 'src': 'data/{}_src_en.txt'}
+        print('Reading file...')
         X = []
         Y = []
+        paths = {'deepL': 'data/{}_deepL_en.txt',
+                 'src': 'data/{}_src_en.txt'}
         for label, path in paths.items():
             with open(path.format(phase)) as corpus:
                 for line in corpus:
@@ -53,12 +57,15 @@ def load_corpus(phase, cache=True):
     return X, Y
 
 
-def data_description(X, Y):
+def data_description(X, Y, phase):
     """
     Prints an overview of the proportion and the distribution of the corpus.
     :param X: List of document features to consider.
     :param Y: List of document labels to consider.
     """
+    if phase not in ('train', 'dev', 'test'):
+        raise ValueError("Phase should be one of 'train', 'dev', 'test'")
+
     # Determine proportions and distributions
     total_docs = len(X)
     label_counts = Counter()
@@ -66,7 +73,7 @@ def data_description(X, Y):
         label_counts.update([label])
 
     # Print the results
-    print('\n== Data Description ==')
+    print('\n== Data Description ({}) =='.format(phase))
     print('-- Overall proportion --')
     print('{:<18}{:<10}'.format('Total articles:', total_docs))
 
@@ -78,13 +85,17 @@ def data_description(X, Y):
 def preprocess(X, phase, stopwords='english', lowercase=True, rm_punctuation=True, cache=True):
     """
     Filters and transforms dictionaries of features based on the given parameters.
-    :param X: List of dictionaries that contain document elements.
+    :param X: List of strings representing documents.
+    :param phase: String representing the current phase name.
     :param stopwords: String referring to the list of stopwords from NLTK to use.
     :param lowercase: Boolean expressing whether considered text should be lowercased.
     :param rm_punctuation: Boolean expressing whether punctuation should be removed from considered text.
     :param cache: Boolean expressing whether data should be loaded from and saved to cache.
-    :return: List of dictionaries containing filtered and transformed tokens and their language tags.
+    :return: List of strings representing filtered documents.
     """
+    if phase not in ('train', 'dev', 'test'):
+        raise ValueError("Phase should be one of 'train', 'dev', 'test'")
+
     print('\n=> Preprocessing {} corpus...'.format(phase))
 
     cache_patt = 'cache/{}-{}-{}-{}.processed'
@@ -135,21 +146,6 @@ def preprocess(X, phase, stopwords='english', lowercase=True, rm_punctuation=Tru
     return Xfiltered
 
 
-def get_labels(Y, label):
-    """
-    Provides string labels based on the given parameters.
-    :param Y: List of dictionaries containing document labels.
-    :param label: String expressing whether to use the hyperp or bias label.
-    :return: List of string labels.
-    """
-    if label in ('hyperp', 'bias'):
-        return [labels[label] for labels in Y]
-    elif label == 'joint':
-        return ['{} {}'.format(labels['hyperp'], labels['bias']) for labels in Y]
-    else:
-        raise ValueError('Label must be one of \'hyperp\', \'bias\' or \'joint\'')
-
-
 def get_vectorizer(tfidf=False, **v_settings):
     """
     Creates an instance of either TfidfVectorizer or CountVectorizer.
@@ -197,7 +193,8 @@ def get_classifier(classifier, m_settings):
     elif classifier == 'DummyClassifier':
         clf = DummyClassifier(random_state=48, **m_settings)
     else:
-        clf = None
+        raise ValueError("Classifier should be one of 'LinearSVC', 'LogisticRegression',"
+                         "'RandomForestClassifier' or 'DummyClassifier'")
 
     return clf
 
@@ -332,41 +329,37 @@ def most_informative_features(vec, clf, labels, n=10):
             print("\t%.4f\t%-25s\t\t%.4f\t%-25s" % (coef_1, fn_1, coef_2, fn_2))
 
 
-def classify(c_settings, r_settings, p_settings, m_settings):
+def classify(p_settings, c_settings, v_settings, m_settings):
     """
     Perform all required steps for classification of sentiment labels in code-mixed text.
-    :param c_settings: Dictionary of parameters for the load_corpus function.
-    :param r_settings: Dictionary of parameters for the preprocessing function.
-    :param p_settings: Dictionary of parameters to tweak classification steps to execute.
+    :param p_settings: Dictionary of parameters for the preprocessing function.
+    :param c_settings: Dictionary of parameters to tweak classification steps to execute.
+    :param v_settings: Dictionary of parameters for the vectorizer.
     :param m_settings: Dictionary of parameters for the classifier.
     """
     # Print out settings
     print('== Settings ==')
-    # print('-- Corpus --')
-    # for setting, value in c_settings.items():
-    #     print('{:30} {}'.format(setting, value))
-
-    print('\n-- Feature Generation --')
-    for setting, value in r_settings.items():
+    print('-- Feature Generation --')
+    for setting, value in p_settings.items():
         print('{:30} {}'.format(setting, value))
 
-    print('\n-- Classifier ({}) --'.format(p_settings['classifier']))
+    print('\n-- Classifier ({}) --'.format(c_settings['classifier']))
     if not m_settings:
         print('Default settings')
     for setting, value in m_settings.items():
         print('{:30} {}'.format(setting, value))
 
     # Get train corpus
-    Xtrain, Ytrain, = load_corpus('train', **c_settings)
-    data_description(Xtrain, Ytrain)
+    Xtrain, Ytrain, = load_corpus('train')
+    data_description(Xtrain, Ytrain, 'train')
 
     # Get dev corpus
-    Xdev, Ydev = load_corpus('dev', **c_settings)
-    data_description(Xdev, Ydev)
+    Xdev, Ydev = load_corpus('dev')
+    data_description(Xdev, Ydev, 'dev')
 
     # Perform preprocessing
-    Xtrain = preprocess(Xtrain, 'train', **r_settings)
-    Xdev = preprocess(Xdev, 'dev', **r_settings)
+    Xtrain = preprocess(Xtrain, 'train', **p_settings)
+    Xdev = preprocess(Xdev, 'dev', **p_settings)
 
     # Merge train and dev data
     Xtrain_dev = Xtrain + Xdev
@@ -376,47 +369,45 @@ def classify(c_settings, r_settings, p_settings, m_settings):
     print('\n=> Fitting model...')
 
     # Select vectorizer
-    vec = get_vectorizer(True)
+    vec = get_vectorizer(True, **v_settings)
 
     # Select classifier
-    clf = get_classifier(p_settings['classifier'], m_settings)
+    clf = get_classifier(c_settings['classifier'], m_settings)
 
     # Create model
     model = get_model(vec, clf)
 
     # Fit and predict
-    if p_settings['ml_regular']:
+    if c_settings['ml_regular']:
         ml_regular(model, Xtrain, Ytrain, Xdev, Ydev)
-    if p_settings['ml_crossval']:
+    if c_settings['ml_crossval']:
         ml_crossval(model, Xtrain_dev, Ytrain_dev)
-    if p_settings['final_test']:
+    if c_settings['final_test']:
         print('== FINAL TEST ==')
         print('=> Fitting for final test...')
         ml_regular(model, Xtrain=Xtrain, Ytrain=Ytrain)
 
         # Load and preprocess testing data
         Xtest, Ytest = load_corpus('test')
-        Xtest = preprocess(Xtest, 'test', **r_settings)
+        Xtest = preprocess(Xtest, 'test', **p_settings)
 
         # Perform evaluation
         ml_regular(model, Xtest=Xtest, Ytest=Ytest)
 
     # Print most informative features
-    if p_settings['informative_features'] and p_settings['classifier'] != 'DummyClassifier':
-        most_informative_features(vec, clf, model.classes_, n=p_settings['informative_features'])
+    if c_settings['informative_features'] and c_settings['classifier'] != 'DummyClassifier':
+        most_informative_features(vec, clf, model.classes_, n=c_settings['informative_features'])
 
 
 def main():
     # Settings
-    c_settings = {}
-
-    r_settings = {
+    p_settings = {
         'lowercase': False,
         'stopwords': False,
         'rm_punctuation': False
     }
 
-    p_settings = {
+    c_settings = {
         'classifier': 'LinearSVC',
         'ml_regular': True,
         'ml_crossval': False,
@@ -424,11 +415,14 @@ def main():
         'informative_features': 25
     }
 
-    m_settings = {
-}
+    v_settings = {
+        'ngram_range': (1, 3)
+    }
+
+    m_settings = {}
 
     # Perform classification
-    classify(c_settings, r_settings, p_settings, m_settings)
+    classify(p_settings, c_settings, v_settings, m_settings)
 
 
 if __name__ == "__main__":
