@@ -4,7 +4,7 @@
 from collections import Counter, OrderedDict, defaultdict
 from pprint import pprint
 from sklearn.model_selection import KFold
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer, TfidfVectorizer
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.dummy import DummyClassifier
@@ -176,6 +176,20 @@ def get_pipeline(feat, vec, tfidf=False):
     return Pipeline(pipeline)
 
 
+def get_feature_union(f_settings):
+    """
+    Creates a feature union of vectorizers as given in the settings parameter.
+    :param f_settings: Dictionary of dictionaries representing vectorizer settings.
+    :return: Feature union of vectorizers
+    """
+    feature_union = OrderedDict()
+
+    for vec_name, vec_settings in f_settings.items():
+        feature_union[vec_name] = get_vectorizer(**vec_settings)
+
+    return FeatureUnion(list(feature_union.items()))
+
+
 def get_classifier(classifier, m_settings):
     """
     Easily provides instance of a selected classifier from SciKit Learn.
@@ -329,22 +343,25 @@ def most_informative_features(vec, clf, labels, n=10):
             print("\t%.4f\t%-25s\t\t%.4f\t%-25s" % (coef_1, fn_1, coef_2, fn_2))
 
 
-def classify(c_settings, v_settings, m_settings):
+def classify(c_settings, f_settings, m_settings):
     """
     Perform all required steps for classification of sentiment labels in code-mixed text.
     :param c_settings: Dictionary of parameters to tweak classification steps to execute.
-    :param v_settings: Dictionary of parameters for the vectorizer.
+    :param f_settings: Dictionary of dictionaries representing vectorizers for the feature union.
     :param m_settings: Dictionary of parameters for the classifier.
     """
     # Print out settings
     print('== Settings ==')
-    print('-- Vectorization --')
-    if not v_settings:
-        print('Default settings')
-    for setting, value in v_settings.items():
-        print('{:30} {}'.format(setting, value))
+    print('-- Feature Union --')
+    for vec_name, vec_settings in f_settings.items():
+        print('** {} **'.format(vec_name))
+        if not vec_settings:
+            print('Default settings')
+        for setting, value in vec_settings.items():
+            print('{:30} {}'.format(setting, value))
+        print()
 
-    print('\n-- Classifier ({}) --'.format(c_settings['classifier']))
+    print('-- Classifier ({}) --'.format(c_settings['classifier']))
     if not m_settings:
         print('Default settings')
     for setting, value in m_settings.items():
@@ -365,14 +382,14 @@ def classify(c_settings, v_settings, m_settings):
     # Perform training and evaluation
     print('\n=> Fitting model...')
 
-    # Select vectorizer
-    vec = get_vectorizer(True, **v_settings)
+    # Get feature union of vectorizers
+    fun = get_feature_union(f_settings)
 
     # Select classifier
     clf = get_classifier(c_settings['classifier'], m_settings)
 
     # Create model
-    model = get_model(vec, clf)
+    model = get_model(fun, clf)
 
     # Fit and predict
     if c_settings['ml_regular']:
@@ -386,14 +403,14 @@ def classify(c_settings, v_settings, m_settings):
 
         # Load and preprocess testing data
         Xtest, Ytest = load_corpus('test')
-        Xtest = preprocess(Xtest, 'test', **p_settings)
+        Xtest = preprocess(Xtest, 'test')
 
         # Perform evaluation
         ml_regular(model, Xtest=Xtest, Ytest=Ytest)
 
     # Print most informative features
     if c_settings['informative_features'] and c_settings['classifier'] != 'DummyClassifier':
-        most_informative_features(vec, clf, model.classes_, n=c_settings['informative_features'])
+        most_informative_features(fun, clf, model.classes_, n=c_settings['informative_features'])
 
 
 def main():
@@ -406,16 +423,27 @@ def main():
         'informative_features': 25
     }
 
-    v_settings = {
-        'ngram_range': (1, 3),
-        'lowercase': False,
-        'stop_words': None
+    f_settings = {
+        'char': {
+            'tfidf': True,
+            'analyzer': 'char',
+            'ngram_range': (2, 10),
+            'lowercase': False,
+            'stop_words': None
+        },
+        'word': {
+            'tfidf': True,
+            'analyzer': 'word',
+            'ngram_range': (1, 3),
+            'lowercase': False,
+            'stop_words': None
+        }
     }
 
     m_settings = {}
 
     # Perform classification
-    classify(c_settings, v_settings, m_settings)
+    classify(c_settings, f_settings, m_settings)
 
 
 if __name__ == "__main__":
