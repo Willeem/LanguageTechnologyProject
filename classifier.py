@@ -9,7 +9,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 from simpletransformers.classification import ClassificationModel
-
+import argparse 
 
 def read_data():
     train_en = [[line.rstrip(), 0] for line in open('data/train_src_en.txt', encoding='utf-8').readlines()]
@@ -21,11 +21,17 @@ def read_data():
 
     return train_en + train_deepl, dev_en + dev_deepl, test_en + test_deepl
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Give arguments for running the classifier.')
+    parser.add_argument('--num_epochs', type=int, help='Specify amount of epochs')
+    return parser.parse_args()
+
 
 if __name__ == '__main__':
     # TODO: voeg argparse toe wat de input beter kan verwerken
     np.random.seed(212)
-
+    arguments = parse_args()
+    num_epochs = arguments.num_epochs
     train, dev, test = read_data()
 
     # Turn into pandas dataframes so SimpleTransformers can use the data
@@ -35,7 +41,14 @@ if __name__ == '__main__':
 
     # TODO: Hier kunnen we wat data-info toevoegen (label distribution e.d.)
 
-    model_BERT = ClassificationModel('bert', 'bert-base-cased' , use_cuda=True,  args={'num_train_epochs':10, 'train_batch_size': 32, 'eval_batch_size':32, 'output_dir': 'bert_outputs_10_epoch/', 'cache_dir': 'cache_bert_10/'})
+    args = {
+        'num_train_epochs':num_epochs, 
+        'train_batch_size': 32, 
+        'eval_batch_size':32, 
+        'output_dir': 'bert_outputs_'+str(num_epochs)+'_epoch/', 
+        'cache_dir': 'cache_bert_'+str(num_epochs)+'/'}
+
+    model_BERT = ClassificationModel('bert', 'bert-base-cased' , use_cuda=True,  args=args)
     # Train the model
     model_BERT.train_model(train)
 
