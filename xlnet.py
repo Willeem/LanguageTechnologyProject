@@ -40,7 +40,7 @@ if __name__ == '__main__':
     test = pd.DataFrame(test)
 
     if path.exists('storage/xlnet_outputs_{}_epoch/'.format(num_epochs)):
-        model_XLNet = ClassificationModel('bert', 'storage/xlnet_outputs_{}_epoch/'.format(num_epochs))
+        model_XLNet = ClassificationModel('xlnet', 'storage/xlnet_outputs_{}_epoch/'.format(num_epochs))
         eval_df = test
 
     else:
