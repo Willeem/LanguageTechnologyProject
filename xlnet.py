@@ -46,15 +46,15 @@ if __name__ == '__main__':
         'num_train_epochs': num_epochs,
         'train_batch_size': 32, 
         'eval_batch_size': 32,
-        'output_dir': 'storage/xlm_outputs_'+str(num_epochs)+'_epoch/',
-        'cache_dir': 'storage/cache_xlm_'+str(num_epochs)+'/'}
+        'output_dir': 'storage/xlnet_outputs_'+str(num_epochs)+'_epoch/',
+        'cache_dir': 'storage/cache_xlnet_'+str(num_epochs)+'/'}
 
     # Train the model
-    model_XLM = ClassificationModel('xlmroberta', 'xlm-roberta-base', use_cuda=True,  args=args)
-    model_XLM.train_model(train)
+    model_XLNet = ClassificationModel('xlnet', 'xlnet-base-cased', use_cuda=True,  args=args)
+    model_XLNet.train_model(train)
 
     # Evaluate the model
-    result, model_XLM_outputs, wrong_predictions_XLM = model_XLM.eval_model(dev, cr=classification_report, cm=confusion_matrix, acc=accuracy_score, verbose=True)
+    result, model_XLNet_outputs, wrong_predictions_XLNet = model_XLNet.eval_model(dev, cr=classification_report, cm=confusion_matrix, acc=accuracy_score, verbose=True)
     print(result['cr'])  # Classification Report
     print(result['cm'])  # Confusion Matrix
     print(result['acc'])  # Accuracy Score  
