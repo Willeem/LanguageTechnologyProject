@@ -1,6 +1,5 @@
-# filename: classifier.py
-#
-# Authors: Martijn Baas, Willem Datema, Stijn Eikelboom and Elvira Slaghekke
+# Language Technology Project, Final Project
+# by Martijn Baas, Willem Datema, Stijn Eikelboom and Elvira Slaghekke
 
 
 import pandas as pd
@@ -8,6 +7,7 @@ import argparse
 import numpy as np
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 from simpletransformers.classification import ClassificationModel
+from os import path
 import argparse
 
 
@@ -29,7 +29,6 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    # TODO: voeg argparse toe wat de input beter kan verwerken
     np.random.seed(212)
     arguments = parse_args()
     num_epochs = arguments.num_epochs
@@ -40,21 +39,30 @@ if __name__ == '__main__':
     dev = pd.DataFrame(dev)
     test = pd.DataFrame(test)
 
-    # TODO: Hier kunnen we wat data-info toevoegen (label distribution e.d.)
+    if path.exists('storage/xlnet_outputs_{}_epoch/'.format(num_epochs)):
+        model_XLNet = ClassificationModel('bert', 'storage/xlnet_outputs_{}_epoch/'.format(num_epochs))
+        eval_df = test
 
-    args = {
-        'num_train_epochs': num_epochs,
-        'train_batch_size': 32, 
-        'eval_batch_size': 32,
-        'output_dir': 'storage/xlnet_outputs_'+str(num_epochs)+'_epoch/',
-        'cache_dir': 'storage/cache_xlnet_'+str(num_epochs)+'/'}
+    else:
+        args = {
+            'num_train_epochs': num_epochs,
+            'train_batch_size': 32,
+            'eval_batch_size': 32,
+            'output_dir': 'storage/xlnet_outputs_{}_epoch/'.format(num_epochs),
+            'cache_dir': 'storage/cache_xlnet_{}/'.format(num_epochs)
+        }
 
-    # Train the model
-    model_XLNet = ClassificationModel('xlnet', 'xlnet-base-cased', use_cuda=True,  args=args)
-    model_XLNet.train_model(train)
+        # Train the model
+        model_XLNet = ClassificationModel('xlnet', 'xlnet-base-cased', use_cuda=True, args=args)
+        model_XLNet.train_model(train)
+        eval_df = dev
 
     # Evaluate the model
-    result, model_XLNet_outputs, wrong_predictions_XLNet = model_XLNet.eval_model(dev, cr=classification_report, cm=confusion_matrix, acc=accuracy_score, verbose=True)
+    result, model_XLNet_outputs, wrong_predictions_XLNet = model_XLNet.eval_model(eval_df, cr=classification_report,
+                                                                                  cm=confusion_matrix,
+                                                                                  acc=accuracy_score,
+                                                                                  verbose=True)
+
     print(result['cr'])  # Classification Report
     print(result['cm'])  # Confusion Matrix
-    print(result['acc'])  # Accuracy Score  
+    print(result['acc'])  # Accuracy Score
