@@ -6,10 +6,10 @@
 import pandas as pd
 import argparse
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 from simpletransformers.classification import ClassificationModel
-import argparse 
+import argparse
+
 
 def read_data():
     train_en = [[line.rstrip(), 0] for line in open('data/train_src_en.txt', encoding='utf-8').readlines()]
@@ -49,8 +49,8 @@ if __name__ == '__main__':
         'output_dir': 'storage/xlm_outputs_'+str(num_epochs)+'_epoch/',
         'cache_dir': 'storage/cache_xlm_'+str(num_epochs)+'/'}
 
-    model_XLM = ClassificationModel('xlm', 'xlm-mlm-en-2048', use_cuda=True,  args=args)
     # Train the model
+    model_XLM = ClassificationModel('xlm-roberta', 'xlm-roberta-base', use_cuda=True,  args=args)
     model_XLM.train_model(train)
 
     # Evaluate the model
@@ -58,5 +58,3 @@ if __name__ == '__main__':
     print(result['cr'])  # Classification Report
     print(result['cm'])  # Confusion Matrix
     print(result['acc'])  # Accuracy Score  
-
-
