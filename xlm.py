@@ -46,8 +46,8 @@ if __name__ == '__main__':
         'num_train_epochs': num_epochs,
         'train_batch_size': 32, 
         'eval_batch_size': 32,
-        'output_dir': 'xlm_outputs_'+str(num_epochs)+'_epoch/',
-        'cache_dir': 'cache_xlm_'+str(num_epochs)+'/'}
+        'output_dir': 'storage/xlm_outputs_'+str(num_epochs)+'_epoch/',
+        'cache_dir': 'storage/cache_xlm_'+str(num_epochs)+'/'}
 
     model_XLM = ClassificationModel('xlm', 'xlm-mlm-en-2048', use_cuda=True,  args=args)
     # Train the model
