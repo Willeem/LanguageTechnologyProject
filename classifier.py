@@ -48,7 +48,7 @@ if __name__ == '__main__':
         'output_dir': 'roberta_outputs_'+str(num_epochs)+'_epoch/', 
         'cache_dir': 'cache_roberta_'+str(num_epochs)+'/'}
 
-    model_ROBERTA = ClassificationModel('roberta', 'robeta-base' , use_cuda=True,  args=args)
+    model_ROBERTA = ClassificationModel('roberta', 'roberta-base' , use_cuda=True,  args=args)
     # Train the model
     model_ROBERTA.train_model(train)
 
