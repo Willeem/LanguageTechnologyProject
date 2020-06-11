@@ -50,7 +50,7 @@ if __name__ == '__main__':
         'cache_dir': 'storage/cache_xlm_'+str(num_epochs)+'/'}
 
     # Train the model
-    model_XLM = ClassificationModel('xlm-roberta', 'xlm-roberta-base', use_cuda=True,  args=args)
+    model_XLM = ClassificationModel('xlmroberta', 'xlm-roberta-base', use_cuda=True,  args=args)
     model_XLM.train_model(train)
 
     # Evaluate the model
