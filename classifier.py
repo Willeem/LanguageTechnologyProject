@@ -1,7 +1,7 @@
+#!/usr/bin/python3
 # filename: classifier.py
 #
 # Authors: Martijn Baas, Willem Datema, Stijn Eikelboom and Elvira Slaghekke
-
 
 import pandas as pd
 import argparse
@@ -45,15 +45,15 @@ if __name__ == '__main__':
         'num_train_epochs':num_epochs, 
         'train_batch_size': 32, 
         'eval_batch_size':32, 
-        'output_dir': 'bert_outputs_'+str(num_epochs)+'_epoch/', 
-        'cache_dir': 'cache_bert_'+str(num_epochs)+'/'}
+        'output_dir': 'roberta_outputs_'+str(num_epochs)+'_epoch/', 
+        'cache_dir': 'cache_roberta_'+str(num_epochs)+'/'}
 
-    model_BERT = ClassificationModel('bert', 'bert-base-cased' , use_cuda=True,  args=args)
+    model_ROBERTA = ClassificationModel('roberta', 'robeta-base' , use_cuda=True,  args=args)
     # Train the model
-    model_BERT.train_model(train)
+    model_ROBERTA.train_model(train)
 
     # Evaluate the model
-    result, model_BERT_outputs, wrong_predictions_BERT = model_BERT.eval_model(dev, cr=classification_report, cm=confusion_matrix, acc=accuracy_score, verbose=True)
+    result, model_ROBERTA_outputs, wrong_predictions_BERT = model_ROBERTA.eval_model(dev, cr=classification_report, cm=confusion_matrix, acc=accuracy_score, verbose=True)
     print(result['cr'])  # Classification Report
     print(result['cm'])  # Confusion Matrix
     print(result['acc'])  # Accuracy Score  
