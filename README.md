@@ -3,7 +3,7 @@
 This is the repository for a study as part of Language Technology Project, a master's course at the University of Groningen. This study aims to employ Transformers to automatically distinguish human and machine translations. These are implemented using [SimpleTransformers](https://simpletransformers.ai).
 
 ## Dependencies
-The dependencies are easy to install with the provided requirements file. It is recommended to create a virtual environment and run the following code:
+The dependencies are easy to install with the provided requirements file. It is recommended to create a virtual environment and run the following command:
 ```
 pip install -r requirements.txt
 ```
