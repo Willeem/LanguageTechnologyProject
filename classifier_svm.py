@@ -6,7 +6,6 @@ from pprint import pprint
 from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer, TfidfVectorizer
-from sklearn.feature_extraction import DictVectorizer
 from sklearn.dummy import DummyClassifier
 from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
@@ -403,7 +402,6 @@ def classify(c_settings, f_settings, m_settings):
 
         # Load and preprocess testing data
         Xtest, Ytest = load_corpus('test')
-        Xtest = preprocess(Xtest, 'test')
 
         # Perform evaluation
         ml_regular(model, Xtest=Xtest, Ytest=Ytest)
@@ -419,7 +417,7 @@ def main():
         'classifier': 'LinearSVC',
         'ml_regular': True,
         'ml_crossval': False,
-        'final_test': False,
+        'final_test': True,
         'informative_features': 25
     }
 
@@ -428,13 +426,6 @@ def main():
             'tfidf': True,
             'analyzer': 'char',
             'ngram_range': (2, 10),
-            'lowercase': False,
-            'stop_words': None
-        },
-        'word': {
-            'tfidf': True,
-            'analyzer': 'word',
-            'ngram_range': (1, 3),
             'lowercase': False,
             'stop_words': None
         }
