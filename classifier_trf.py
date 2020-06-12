@@ -11,6 +11,10 @@ import os
 
 
 def parse_args():
+    """
+    Parse CLI arguments for the script and return them.
+    :return: Namespace of parsed CLI arguments.
+    """
     parser = argparse.ArgumentParser(description='Arguments for running the classifier.')
     parser.add_argument('--arch', type=str, choices=['bert', 'roberta', 'xlnet'],
                         help='Transformer architecture to use')
@@ -22,8 +26,8 @@ def parse_args():
 def load_corpus(phase):
     """
     Loads the given corpus file to a document and label list.
-    :param phase: String representing the phase for which date should be loaded.
-    :return: List of document and label pairs.
+    :param phase: Phase for which data should be loaded.
+    :return: Pandas DataFrame of document and label pairs.
     """
     if phase not in ('train', 'dev', 'test'):
         raise ValueError("Phase should be one of 'train', 'dev', 'test'")
@@ -47,7 +51,7 @@ def load_corpus(phase):
 def data_description(corpus):
     """
     Prints an overview of the proportion and the distribution of the corpus.
-    :param corpus:
+    :param corpus: Pandas DataFrame of document and label pairs.
     """
     # Split documents and labels
     X, Y = zip(*corpus.values.tolist())
@@ -71,9 +75,9 @@ def data_description(corpus):
 
 def get_transformer_model(arch):
     """
-    Get the name of the pretrained model for the given architecture.
-    :param arch: Architecture to return pretrained model for.
-    :return: Name of the pretrained model.
+    Get the name of the pretrained Transformer model for the given architecture.
+    :param arch: Transformer architecture to return pretrained model for.
+    :return: Name of the pretrained Transformer model.
     """
     models = {
         'bert': 'bert-base-uncased',
@@ -156,9 +160,9 @@ def cf_matrix(cm, labels):
 
 def evaluate_model(model, phase):
     """
-    Evaluate the given model on the given dataframe.
+    Evaluate the given model on the given DataFrame.
     :param model: SimpleTransformers model to evaluate.
-    :param phase: String representing the phase for which date should be loaded.
+    :param phase: Phase for which data should be loaded.
     """
     # Load corpus
     eval_df = load_corpus(phase)
