@@ -18,7 +18,7 @@ The Transformer models can be run in the following way:
 ```
 python classifier_trf.py --arch <model_name> --num_epochs <int> [--test]
 ```
-Where `--model_name` can be `BERT`, `XLNet` or `RoBERTa`, `--num_epochs` can be any integer. The `--test` argument should only be used if one wants to reproduce the test set results. Omit this argument to evaluate using the development set.
+Where `--arch` can be `BERT`, `XLNet` or `RoBERTa`, `--num_epochs` can be any integer. The `--test` argument should only be used if one wants to reproduce the test set results. Omit this argument to evaluate using the development set.
 
 ## Obtaining JSON-files for visualisation
 The JSON-files needed for the [_NeAt_ visualisation tool](https://cbaziotis.github.io/neat-vision/) can be obtained by running `obtain_attention_scores.ipynb`. The results were obtained by using Google Colab. It requires a trained [SimpleTransformers](https://simpletransformers.ai) model in the same path as the `.ipynb` file.
